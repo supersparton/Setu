@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "constituency": "PC-MOCK-01",
+    "vintages": {
+      "facilities": "Antyodaya 2020",
+      "deprivation": "Antyodaya 2020",
+      "population": "Antyodaya 2020 (fallback Census 2011 labelled per-row)",
+      "pmgsy": "PMGSY snapshot 2025-08-20",
+      "utilisation": "LS USQ 4517 20.08.2025",
+      "complaints": "synthetic:true"
+    },
+    "verified_2023": false,
+    "weights_default": { "infra_gap": 0.30, "equity": 0.25, "demand_adj": 0.25, "investment_gap": 0.10, "urgency": 0.10 }
+  },
+  "locations": [
+    { "district": "MockDistrict-A", "subdistrict": "Block-A1", "village": "Rampur", "shrid": "100101001" },
+    { "district": "MockDistrict-A", "subdistrict": "Block-A1", "village": "Laxmipur", "shrid": "100101002" },
+    { "district": "MockDistrict-A", "subdistrict": "Block-A2", "village": "Jalpur", "shrid": "100102001" }
+  ],
+  "hotspots": [
+    {
+      "theme": "drinking_water", "subdistrict": "Block-A1", "district": "MockDistrict-A",
+      "ac": "AC-01", "pc": "PC-MOCK-01", "lat": 26.1, "lon": 78.1, "score": 0.81,
+      "terms": {
+        "infra_gap": { "value": 0.93, "status": "ok", "source_vintage": "Antyodaya 2020" },
+        "equity": { "value": 0.78, "status": "ok", "source_vintage": "Antyodaya 2020" },
+        "demand_adj": { "value": 0.74, "status": "ok", "source_vintage": "synthetic complaints" },
+        "investment_gap": { "value": 0.5, "status": "DATA_MISSING", "source_vintage": "no data" },
+        "urgency": { "value": 0.66, "status": "ok", "source_vintage": "synthetic complaints" }
+      },
+      "evidence_count": 14,
+      "top_quotes": [
+        { "text": "पानी नहीं आ रहा, हैंडपंप खराब है", "lang": "hi", "synthetic": true },
+        { "text": "Water tanker comes once a week only", "lang": "en", "synthetic": true }
+      ],
+      "vintages": { "facilities": "Antyodaya 2020", "population": "Antyodaya 2020" },
+      "flags": { "missing_data": false },
+      "provenance_id": "prov-001"
+    },
+    {
+      "theme": "drinking_water", "subdistrict": "Block-A2", "district": "MockDistrict-A",
+      "ac": "AC-01", "pc": "PC-MOCK-01", "lat": 26.3, "lon": 78.4, "score": 0.52,
+      "terms": {
+        "infra_gap": { "value": 0.5, "status": "DATA_MISSING", "source_vintage": "Antyodaya 2020 (missing)" },
+        "equity": { "value": 0.61, "status": "ok", "source_vintage": "Antyodaya 2020" },
+        "demand_adj": { "value": 0.44, "status": "ok", "source_vintage": "synthetic complaints" },
+        "investment_gap": { "value": 0.5, "status": "DATA_MISSING", "source_vintage": "no data" },
+        "urgency": { "value": 0.31, "status": "ok", "source_vintage": "synthetic complaints" }
+      },
+      "evidence_count": 5,
+      "top_quotes": [{ "text": "piped water only 2 hours", "lang": "en", "synthetic": true }],
+      "vintages": { "facilities": "Antyodaya 2020", "population": "Census 2011 base" },
+      "flags": { "missing_data": true },
+      "provenance_id": "prov-002"
+    }
+  ],
+  "alloc": {
+    "total_budget": 50000000,
+    "allocated": 42000000,
+    "unallocated": 8000000,
+    "constraints": { "sc_pct": 18.2, "st_pct": 9.1, "ok": true },
+    "works": [
+      {
+        "rank": 1, "theme": "drinking_water", "subdistrict": "Block-A1", "village": "Rampur",
+        "amount_cr": 0.42, "estimated_beneficiaries": 12400, "cost_per_beneficiary": 339,
+        "horizon": "3 years", "sdg_target": "SDG 6.1", "eligibility_status": "permitted",
+        "sector_flag": "within indicative list", "convergence_flag": "no overlapping scheme found",
+        "score": 0.81, "provenance_id": "prov-001", "sc_share": 22.0, "st_share": 4.0
+      },
+      {
+        "rank": 2, "theme": "roads_connectivity", "subdistrict": "Block-A2", "village": "Jalpur",
+        "amount_cr": 1.10, "estimated_beneficiaries": 5200, "cost_per_beneficiary": 2115,
+        "horizon": "2 years", "sdg_target": "SDG 9.1", "eligibility_status": "permitted",
+        "sector_flag": "within indicative list", "convergence_flag": "PMGSY covers part — check alignment",
+        "score": 0.68, "provenance_id": "prov-002", "sc_share": 8.0, "st_share": 21.0
+      }
+    ],
+    "referrals": [
+      { "reason_code": "MANDATORY_MAINTENANCE_CONDITION", "message": "Not fundable via MPLADS without district confirmation — repair of public asset. May be routed to State maintenance grant.", "route": "State maintenance grant" }
+    ]
+  },
+  "provenance": {
+    "prov-001": {
+      "score": 0.81,
+      "calc": "0.30*0.93 + 0.25*0.78 + 0.25*0.74 + 0.10*0.50 + 0.10*0.66 = 0.81",
+      "weights": { "infra_gap": 0.30, "equity": 0.25, "demand_adj": 0.25, "investment_gap": 0.10, "urgency": 0.10 },
+      "complaints": [
+        { "id": "c-101", "text": "पानी नहीं आ रहा, हैंडपंप खराब है", "lang": "hi", "theme": "drinking_water", "severity": "high", "synthetic": true, "shrid": "100101001" },
+        { "id": "c-102", "text": "Water tanker comes once a week only", "lang": "en", "theme": "drinking_water", "severity": "medium", "synthetic": true, "shrid": "100101001" }
+      ],
+      "data_rows": [
+        { "shrid": "100101001", "piped_water_fully_covered": 0, "total_hhd_having_piped_water_con": 12, "vintage": "Antyodaya 2020" },
+        { "shrid": "100101001", "pmgsy_status": "connected", "vintage": "PMGSY snapshot 2025-08-20" },
+        { "shrid": "100101001", "r": 0.62, "population": 3400, "vintage": "Antyodaya 2020" }
+      ],
+      "vintages": { "facilities": "Antyodaya 2020", "population": "Antyodaya 2020", "pmgsy": "2025-08-20", "complaints": "synthetic" },
+      "flags": { "sector": "within indicative list", "convergence": "no overlapping scheme found", "missing_data": "none" }
+    }
+  },
+  "national": {
+    "constituencies": [
+      { "pc": "PC-MOCK-01", "need": 0.74 },
+      { "pc": "PC-MOCK-02", "need": 0.61 }
+    ],
+    "state_utilisation_context": [{ "state": "MockState", "util_pct": 54.2, "dated": "20 Aug 2025", "def": "recommended ÷ entitlement" }],
+    "state_sanction_context": [{ "state": "MockState", "avg_days": 68.4, "dated": "20 Aug 2025" }]
+  },
+  "impact": [
+    { "project": "Rampur piped water ext.", "requests": 14, "demand_delta": "-22% (simulated, labelled)", "latency": "52 days vs 45-day rule" }
+  ]
+}
