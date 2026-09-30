@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Setu — Constituency Investment Decision Engine</title>
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>Setu <span class="sub">Constituency Investment Decision Engine</span></h1>
+    <p class="tagline">Intake is being solved — Setu connects what citizens say to village infrastructure evidence.</p>
+  </div>
+  <div class="badges">
+    <span class="badge warn" id="synthetic-banner">[SYNTHETIC COMPLAINTS · REAL DATA]</span>
+    <span class="badge danger hidden" id="verified-banner">ELIGIBILITY VERIFIED_2023: false — district confirmation needed</span>
+    <span class="badge info" id="voice-status">Text intake active</span>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button data-tab="intake" class="active">1 · Intake</button>
+  <button data-tab="hotspots">2 · Hotspots</button>
+  <button data-tab="shortlist">3 · Shortlist ₹5cr</button>
+  <button data-tab="receipt">4 · Receipt (hero)</button>
+  <button data-tab="national">5 · National + Ledger</button>
+</nav>
+
+<main>
+  <!-- INTAKE -->
+  <section id="tab-intake" class="tab active">
+    <h2>Citizen intake — voice, text <small>(no free-text location; explicit picker only)</small></h2>
+    <div class="grid2">
+      <div class="card">
+        <label>Text request
+          <textarea id="intake-text" rows="4" placeholder="e.g. पानी नहीं आ रहा, हैंडपंप खराब है…"></textarea>
+        </label>
+        <div class="row">
+          <label>Language
+            <select id="intake-lang">
+              <option value="hi">Hindi</option>
+              <option value="en">English</option>
+              <option value="mr">Marathi</option>
+              <option value="te">Telugu</option>
+              <option value="ta">Tamil</option>
+            </select>
+          </label>
+          <label>Channel
+            <select id="intake-channel">
+              <option value="web">web</option>
+              <option value="telegram">telegram</option>
+              <option value="voice">voice</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <button id="btn-mic">🎤 Record (browser capture → /api/ingest)</button>
+          <button id="btn-submit" class="primary">Submit → normalise</button>
+        </div>
+        <p class="hint" id="mic-hint">If voice model unreachable (G3a fail), this stays text-only. Never ship broken voice UI.</p>
+      </div>
+      <div class="card">
+        <h3>Location picker → shrid (3 dropdowns)</h3>
+        <label>District <select id="loc-district"></select></label>
+        <label>Sub-district <select id="loc-sub"></select></label>
+        <label>Village <select id="loc-village"></select></label>
+        <p>shrid: <code id="loc-shrid">—</code></p>
+      </div>
+    </div>
+    <div class="card" id="ingest-result-wrap">
+      <h3>Normalised output <span class="pill">synthetic: true</span></h3>
+      <pre id="ingest-result">Submit a request to see { complaint_id, transcript, language, theme, severity, urgency, shrid, synthetic }.</pre>
+    </div>
+  </section>
+
+  <!-- HOTSPOTS -->
+  <section id="tab-hotspots" class="tab">
+    <h2>Demand hotspots — theme × sub-district <small>(reporting-adjusted)</small></h2>
+    <div class="card">
+      <div class="row wrap">
+        <label>Theme
+          <select id="hotspot-theme">
+            <option value="drinking_water">drinking_water (demo opening — never cut)</option>
+            <option value="roads_connectivity">roads_connectivity</option>
+            <option value="electricity_energy">electricity_energy</option>
+            <option value="education_access">education_access</option>
+          </select>
+        </label>
+        <fieldset class="weights">
+          <legend>Weights (live inputs — Tier-1 cut fallback = numeric inputs, kept)</legend>
+          <label>infra_gap <input type="number" id="w-gap" value="0.30" step="0.05" min="0" max="1"></label>
+          <label>equity <input type="number" id="w-equity" value="0.25" step="0.05" min="0" max="1"></label>
+          <label>demand_adj <input type="number" id="w-demand" value="0.25" step="0.05" min="0" max="1"></label>
+          <label>invest <input type="number" id="w-invest" value="0.10" step="0.05" min="0" max="1"></label>
+          <label>urgency <input type="number" id="w-urgency" value="0.10" step="0.05" min="0" max="1"></label>
+          <button id="btn-rescore">Re-score</button>
+        </fieldset>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Map placeholder (hotspot layer renders here; geometry via datameet fallback)</h3>
+      <div id="map" class="map">Hotspot dots render as list below — map canvas ships H+5. No fuzzy joins.</div>
+      <table id="hotspot-table">
+        <thead><tr><th>Sub-district</th><th>Score</th><th>Terms</th><th>Evidence</th><th>Vintages</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SHORTLIST -->
+  <section id="tab-shortlist" class="tab">
+    <h2>Constrained shortlist — ₹5 crore <small>(SC ≥15% · ST ≥7.5% · prohibited never shown)</small></h2>
+    <div class="card row wrap">
+      <label>Budget ₹ <input type="number" id="budget" value="50000000" step="100000"></label>
+      <button id="btn-alloc" class="primary">Allocate</button>
+      <div id="constraint-bar" class="cbar"><div id="cbar-sc"></div><div id="cbar-st"></div><div id="cbar-rest"></div></div>
+      <span id="constraint-text"></span>
+    </div>
+    <div class="card">
+      <table id="works-table">
+        <thead><tr><th>#</th><th>Work / village</th><th>₹ (Cr)</th><th>Beneficiaries</th><th>₹/ben</th><th>Score</th><th>Eligibility</th><th>Provenance</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p>Unallocated (honest figure): <strong id="unallocated">—</strong></p>
+      <div id="referrals"><h3>Human review referrals (routed, never dropped)</h3><ul></ul></div>
+    </div>
+  </section>
+
+  <!-- RECEIPT -->
+  <section id="tab-receipt" class="tab">
+    <h2>Evidence receipt — the hero screen <small>every number clickable to source</small></h2>
+    <div class="card receipt" id="receipt">
+      <p class="mono">WHY THIS WORK? <span class="pill">SYNTHETIC COMPLAINTS · REAL DATA</span></p>
+      <p>Click a work in Shortlist to load its receipt here. Template: score → terms → evidence → vintage → flags.</p>
+    </div>
+  </section>
+
+  <!-- NATIONAL -->
+  <section id="tab-national" class="tab">
+    <h2>National need table + impact ledger</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>National need (evidence-only, no demand term; 0.6 infra / 0.4 equity)</h3>
+        <table id="national-table"><thead><tr><th>PC</th><th>Need</th><th>Util % (20 Aug 2025)</th><th>Sanction days</th></tr></thead><tbody></tbody></table>
+        <p class="hint">Utilisation = recommended ÷ entitlement. State-level only, dated. No simulated utilisation anywhere.</p>
+      </div>
+      <div class="card">
+        <h3>Impact ledger (static panel ok for Tier 2)</h3>
+        <table id="ledger-table"><thead><tr><th>Project</th><th>Requests</th><th>Demand Δ</th><th>Sanction latency vs 45-day rule</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>CC-BY-4.0 · Open schema · <a href="/api/schema">/api/schema</a> · <code>npm install &amp;&amp; npm start</code> must boot clean clone</span>
+  <span>Setu recommends; District Authority decides.</span>
+</footer>
+
+<script src="./app.js"></script>
+</body>
+</html>
