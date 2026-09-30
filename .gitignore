@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+
+node_modules/
+dist/
+.cache/
+
+# Python (offline build scripts only)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# SHRUG raw files are re-downloadable via scripts/download_shrug.py
+# Derived JSON is the committed, reproducible artifact.
+data/raw/
+*.dta
+
+# LLM response cache — regenerate, don't commit
+data/cache/
+
+.DS_Store
+Thumbs.db
+*.log
