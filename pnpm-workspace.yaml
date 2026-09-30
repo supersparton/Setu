@@ -1,0 +1,7 @@
+# pnpm reads settings from this file, not the "pnpm" key in package.json.
+#
+# Only these two packages run postinstall. protobufjs's script is a funding notice;
+# @google/genai's is its own setup. Everything else stays blocked by default.
+allowBuilds:
+  '@google/genai': true
+  protobufjs: true
